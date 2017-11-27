@@ -92,6 +92,15 @@ public class MainMenu extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //do something
+                Intent i = new Intent(MainMenu.this, SettingsActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     public void resumeGame(String lastGameID){

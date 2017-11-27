@@ -8,16 +8,18 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:name=".BaseApplication"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainMenu">
+        android:name=".BaseApplication">
+        <activity android:name=".MainMenu"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".GameActivity" />
-        <activity android:name=".SettingsActivity"></activity>
+        <activity android:name=".SettingsActivity"
+            android:theme="@style/AppTheme"
+            ></activity>
     </application>
 
 </manifest>
