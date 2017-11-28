@@ -143,7 +143,7 @@ public class Game {
         t.text = getRandomChar();
 
         t.powerup = getPowerup();
-        t.timeBonus = randInt(1, 31);
+        t.timeBonus = randInt(1, 10);
 
         tileMap.put(id, t);
         return t;
@@ -187,12 +187,13 @@ public class Game {
                     timeLeft -= 500;
                 }
                 if (timeLeft <= 0) {
+                    timer.onFinish();
                     timer.cancel();
                 }
-
             }
 
             public void onFinish() {
+                Log.v("Hue", "On finish");
                 if (timeLeft > 0) {
                     startTimer();
                 } else {

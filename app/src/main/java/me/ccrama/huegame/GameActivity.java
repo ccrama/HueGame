@@ -182,7 +182,7 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
         long elapsed = System.currentTimeMillis() - startTime;
 
         if(MainMenu.scores.getLong("highscore", 0) < elapsed) {
-            MainMenu.scores.edit().putLong("highscore", elapsed).apply();
+            MainMenu.scores.edit().putLong("highscore", elapsed).commit();
         }
 
     }
