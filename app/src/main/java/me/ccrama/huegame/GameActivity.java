@@ -34,6 +34,8 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
     public View background, dot, parent;
     public TextView[] textViews = new TextView[10];
 
+    float initX;
+    float initY;
     long startTime;
 
 
@@ -76,6 +78,8 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
                 center.setText("" +game.toGet);
                 background.setBackgroundColor(getResources().getColor(game.colorToGet));
 
+                initX = dot.getX();
+                initY = dot.getY();
 
             }
         });
@@ -85,11 +89,31 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
 
     private GestureDetectorCompat mDetector;
 
+    float dX, dY;
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        this.mDetector.onTouchEvent(event);
-        return super.onTouchEvent(event);
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                dX = dot.getX() - event.getRawX();
+                dY = dot.getY() - event.getRawY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                dot.animate()
+                        .x(event.getRawX() + dX - dot.getWidth()/2)
+                        .y(event.getRawY() + dY - dot.getHeight()/2)
+                        .setDuration(0)
+                        .start();
+                break;
+            case MotionEvent.ACTION_UP:
+                dot.animate().x(initX).y(initY).setDuration(100).start();
+                
+            default:
+                return false;
+        }
+        return true;
     }
+
 
     public void flashRed(){
         Animation animation = new AlphaAnimation(1, 0.5f);
