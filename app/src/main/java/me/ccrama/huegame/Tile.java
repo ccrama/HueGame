@@ -17,9 +17,11 @@ public class Tile  {
     public int color;
     public int x, y;
     public boolean powerup;
+    public boolean powerupUsed;
+    public int timeBonus;
 
     public void attachToView(TextView v, Resources resources){
-        v.setText("" + text);
+        v.setText(""  + ((powerup && !powerupUsed) ? "\n+" + timeBonus : text) );
         v.setBackgroundColor(resources.getColor(color));
     }
 }

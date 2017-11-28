@@ -1,14 +1,18 @@
 package me.ccrama.huegame;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -22,15 +26,16 @@ import java.util.concurrent.TimeUnit;
 
 import me.ccrama.huegame.Game.Game;
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity implements Game.OnColorChange, Game.OnLetterChange {
 
     public GridLayout gridView;
     public Game game;
     public TextView time, center;
-    public View background;
-
+    public View background, dot, parent;
     public TextView[] textViews = new TextView[10];
-    public HashMap<String, Tile> tileMap;
+
+    long startTime;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +43,14 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
         gridView = findViewById(R.id.gameGrid);
         time = findViewById(R.id.time);
+        startTime = System.currentTimeMillis();
+        parent = findViewById(R.id.parent);
 
+        dot = findViewById(R.id.dot);
         center = (TextView) findViewById(R.id.center);
         background = findViewById(R.id.background);
+        game = new Game(this);
 
-        center.setText("" + toGet);
-        background.setBackgroundColor(getResources().getColor(colorToGet));
 
         final ViewTreeObserver vto = gridView.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -52,10 +59,9 @@ public class GameActivity extends AppCompatActivity {
                 gridView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 
 
-                int width = -30 + gridView.getWidth() / 3;
-                int height = -30 + gridView.getHeight() / 3;
+                int width = -dpToPxHorizontal(15) + (gridView.getWidth() / 3);
+                int height = -dpToPxVertical(20) + (gridView.getHeight() / 3);
 
-                Log.v("Hue", "Width is " + width);
 
                 for (int i = 0; i < 10; i++) {
                     TextView v = (TextView) getLayoutInflater().inflate(R.layout.tile, gridView, false);
@@ -65,17 +71,16 @@ public class GameActivity extends AppCompatActivity {
                     gridView.addView(v);
                     textViews[i] = v;
                 }
-                setupInitialState();
+                game.setupInitialState();
+                game.setupTimer();
+                center.setText("" +game.toGet);
+                background.setBackgroundColor(getResources().getColor(game.colorToGet));
 
 
             }
         });
 
-        setupTimer();
-
         mDetector = new GestureDetectorCompat(this, new SwipeGestureDetector());
-
-
     }
 
     private GestureDetectorCompat mDetector;
@@ -87,21 +92,31 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void flashRed(){
-        Animation animation = new AlphaAnimation(1, 0); // Change alpha
-        // from fully
-        // visible to
-        // invisible
-        animation.setDuration(500); // duration - half a second
-        animation.setInterpolator(new LinearInterpolator()); // do not alter
-        // animation
-        // rate
-        // infinitely
-        animation.setRepeatMode(Animation.REVERSE); // Reverse animation at
+        Animation animation = new AlphaAnimation(1, 0.5f);
+        animation.setDuration(250);
+        animation.setInterpolator(new AccelerateDecelerateInterpolator());
+        animation.setRepeatMode(Animation.REVERSE);
+        parent.startAnimation(animation);
+    }
 
-        // the
-        // end so the layout will
-        // fade back in
-        background.startAnimation(animation);
+    public static int dpToPxHorizontal(int dp) {
+        final DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    public static int dpToPxVertical(int dp) {
+        final DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.ydpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    @Override
+    public void onColorChange(int newColor) {
+
+    }
+
+    @Override
+    public void onColorChange(char newLetter) {
+
     }
 
     class SwipeGestureDetector extends GestureDetector.SimpleOnGestureListener {
@@ -127,8 +142,8 @@ public class GameActivity extends AppCompatActivity {
 
                     break;
             }
-            resetTilesWithOffset();
-            updateUICenter();
+            game.resetTilesWithOffset();
+            game.updateUICenter();
             return false;
         }
 
@@ -150,116 +165,8 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    int xOffset, yOffset;
-
-    boolean invalid;
-
-    public void setupInitialState() {
-        tileMap = new HashMap<>();
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                String id = i + ":" + j;
-                Tile t = new Tile();
-                t.x = i;
-                t.y = j;
-                t.color = getRandomColor();
-                t.text = getRandomChar();
-                tileMap.put(id, t);
-            }
-        }
-
-        resetTilesWithOffset();
-        updateUICenter();
-
-
-    }
-
-    char toGet = getRandomChar();
-    int colorToGet = getRandomColor();
-
-    public void updateUICenter() {
-        Tile tile = tileMap.get((1 + xOffset) + ":" + (1 + yOffset));
-        Log.v("Hue", "Title text is " + tile.text + "  adn comparing to " + toGet);
-        invalid = !((tile.text == toGet)|| (tile.color == colorToGet));
-    }
-
-    public void resetTilesWithOffset() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                int x = i + xOffset;
-                int y = j + yOffset;
-                Log.v("Hue", "X is " + x + " and y is " + y);
-                Tile tile = tileMap.get(x + ":" + y);
-                if (tile == null) {
-                    tile = createNewTile(x, y);
-                }
-                TextView t = textViews[((j) * 3) + (i)];
-                tile.attachToView(t, getResources());
-            }
-        }
-    }
-
-    public Tile createNewTile(int x, int y) {
-        String id = x + ":" + y;
-        Tile t = new Tile();
-        t.x = x;
-        t.y = y;
-        t.color = getRandomColor();
-        t.text = getRandomChar();
-        tileMap.put(id, t);
-        return t;
-    }
-
-    int timeLeft;
-    Timer t;
-
-    public static char getRandomChar() {
-        char[] chars = new char[]{'A', 'B', '$', '1', '2', '3', 'X', 'Z', 'Y', '*', '&'};
-        char random = chars[new Random().nextInt(chars.length)];
-        return random;
-
-    }
-
-    public static int getRandomColor() {
-        int[] colors = new int[]{R.color.md_amber_300, R.color.md_blue_300, R.color.md_blue_grey_500, R.color.md_red_500, R.color.md_green_300, R.color.md_deep_orange_400, R.color.md_pink_300, R.color.md_teal_800, R.color.md_yellow_500};
-        int random = colors[new Random().nextInt(colors.length)];
-        return random;
-    }
-
-    public void setupTimer() {
-        timeLeft = 120000;
-
-        new CountDownTimer(timeLeft, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                timeLeft -= 1000;
-                final long minute = TimeUnit.MILLISECONDS.toMinutes(timeLeft);
-                final long second = TimeUnit.MILLISECONDS.toSeconds(timeLeft) - (60 * minute);
-                if (minute > 0) {
-                    time.setText(String.format("%02d:%02d", minute, second));
-                } else {
-                    time.setText(String.format("%02d:%02d", minute, second));
-                }
-
-                if(invalid){
-                    flashRed();
-                }
-
-            }
-
-            public void onFinish() {
-                finish();
-            }
-        }.start();
-
-
-    }
-
-    public void timeIncremented() {
-        timeLeft -= 100;
-
-
-    }
+    public int xOffset;
+    public int yOffset;
 
     public void resumeGame(String lastGameID) {
         //todo this
@@ -267,6 +174,17 @@ public class GameActivity extends AppCompatActivity {
 
     public void newGame() {
         //todo this
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        long elapsed = System.currentTimeMillis() - startTime;
+
+        if(MainMenu.scores.getLong("highscore", 0) < elapsed) {
+            MainMenu.scores.edit().putLong("highscore", elapsed).apply();
+        }
+
     }
 
 }

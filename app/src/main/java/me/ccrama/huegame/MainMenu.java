@@ -13,11 +13,13 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.widget.TextView;
 
+import java.util.concurrent.TimeUnit;
+
 public class MainMenu extends AppCompatActivity {
 
     public static SharedPreferences scores;
     public TextView highScore;
-    public int score = 0;
+    public long score = 0;
     public String lastGameID = "";
 
     @Override
@@ -30,8 +32,15 @@ public class MainMenu extends AppCompatActivity {
     }
 
     public void updateUI(){
-        score = scores.getInt("highscore", 0);
-        highScore.setText(String.format("High Score %d", score));
+        score = scores.getLong("highscore", 0);
+
+        final long minute = TimeUnit.MILLISECONDS.toMinutes(score);
+        final long second = TimeUnit.MILLISECONDS.toSeconds(score) - (60 * minute);
+        if (minute > 0) {
+            highScore.setText(String.format("Longest game %02d:%02d", minute, second));
+        } else {
+            highScore.setText(String.format("Longest game %02d:%02d", minute, second));
+        }
     }
     float[] hsv;
     int runColor;
