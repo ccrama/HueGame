@@ -111,7 +111,7 @@ public class Game {
         Tile tile = tileMap.get((1 + bindTo.xOffset) + ":" + (1 + bindTo.yOffset));
         invalid = !((tile.text == toGet) || (tile.color == colorToGet));
 
-        if(tile.powerup){
+        if(tile.powerup && !tile.powerupUsed){
             tile.powerupUsed = true;
             timeLeft += (tile.timeBonus * 1000);
             tileMap.put((1 + bindTo.xOffset) + ":" + (1 + bindTo.yOffset), tile);
