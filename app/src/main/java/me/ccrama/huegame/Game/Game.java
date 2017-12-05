@@ -15,6 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import me.ccrama.huegame.GameActivity;
+import me.ccrama.huegame.MainMenu;
 import me.ccrama.huegame.R;
 import me.ccrama.huegame.SettingsActivity;
 import me.ccrama.huegame.Tile;
@@ -187,6 +188,16 @@ public class Game {
                 if (timeLeft > 0) {
                     startTimer();
                 } else {
+                    long elapsed = System.currentTimeMillis() - bindTo.startTime;
+                    bindTo.backgroundM.stop();
+                    MainMenu.high = false;
+                    if(MainMenu.scores.getLong("highscore", 0) < elapsed) {
+                        MainMenu.high = true;
+                        MainMenu.scores.edit().putLong("highscore", elapsed).commit();
+                    }
+
+                    MainMenu.lastGame = elapsed;
+
                     bindTo.finish();
                 }
             }

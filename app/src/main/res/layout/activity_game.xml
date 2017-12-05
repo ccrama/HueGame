@@ -85,7 +85,7 @@
             android:layout_height="100dp"
             android:layout_alignParentLeft="true"
             android:gravity="center"
-            android:text="1000"
+            android:text=""
             android:textColor="#fff"
             android:textSize="30sp"
             android:textStyle="bold" />

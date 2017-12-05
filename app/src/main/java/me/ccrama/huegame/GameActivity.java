@@ -35,8 +35,8 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
     public View background, dot, parent;
     public TextView[] textViews = new TextView[10];
 
-    private MediaPlayer backgroundM;
-    long startTime;
+    public MediaPlayer backgroundM;
+    public long startTime;
 
 
     @Override
@@ -246,21 +246,4 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
     public void newGame() {
         //todo this
     }
-
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        long elapsed = System.currentTimeMillis() - startTime;
-
-        backgroundM.stop();
-        MainMenu.high = false;
-        if(MainMenu.scores.getLong("highscore", 0) < elapsed) {
-            MainMenu.high = true;
-            MainMenu.scores.edit().putLong("highscore", elapsed).commit();
-        }
-
-        MainMenu.lastGame = elapsed;
-
-    }
-
 }
