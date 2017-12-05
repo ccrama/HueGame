@@ -1,5 +1,10 @@
 package me.ccrama.huegame.Game;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.CountDownTimer;
 import android.util.Log;
 import android.widget.TextView;
@@ -11,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import me.ccrama.huegame.GameActivity;
 import me.ccrama.huegame.R;
+import me.ccrama.huegame.SettingsActivity;
 import me.ccrama.huegame.Tile;
 
 /**
@@ -24,7 +30,7 @@ public class Game {
     public OnLetterChange onLetterChange;
     public OnPlayerMove onPlayerMove;
     public boolean paused;
-
+    public MediaPlayer background;
     public GameActivity bindTo;
 
     public HashMap<String, Tile> tileMap;
@@ -34,29 +40,10 @@ public class Game {
         onColorChange = parent;
     }
 
-    public void initialize() {
-        //todo this
-    }
-
-    public void resume() {
-        //todo this
-    }
-
-    public void didEnd() {
-        //todo this
-    }
-
-    public void addTime(int time) {
-        //todo this
-    }
-
-    public void changeColor(int newColor) {
-        //todo this
-    }
 
     public boolean getPowerup() {
          Random percent = new Random();
-        return  percent.nextFloat() < 0.03;
+        return  percent.nextFloat() < 0.04;
     }
 
     public interface OnColorChange {
@@ -73,7 +60,7 @@ public class Game {
         void onPlayerMove(int oldX, int oldY, int newX, int newY);
     }
 
-    public void setupInitialState() {
+    public void setupInitialState(Context c) {
         tileMap = new HashMap<>();
         Tile center = new Tile();
         for (int i = 0; i < 3; i++) {
@@ -100,6 +87,12 @@ public class Game {
 
         resetTilesWithOffset();
         updateUICenter();
+
+        background = MediaPlayer.create(c.getApplicationContext(), R.raw.background);
+        if(SettingsActivity.soundsEnabled) {
+            background.start();
+        }
+
 
 
     }
@@ -160,6 +153,9 @@ public class Game {
 
     public static int getRandomColor() {
         int[] colors = new int[]{R.color.md_amber_300, R.color.md_blue_300, R.color.md_blue_grey_500, R.color.md_red_500, R.color.md_green_300, R.color.md_deep_orange_400, R.color.md_pink_300, R.color.md_teal_800, R.color.md_yellow_500};
+        if(SettingsActivity.highContrastEnabled){
+            colors = new int[]{Color.parseColor("#000000"), Color.parseColor("#B66DFE"), Color.parseColor("#FFCBE2"), Color.parseColor("#FFFF6D"), Color.parseColor("#24FD23"), Color.parseColor("#924900")};
+        }
         int random = colors[new Random().nextInt(colors.length)];
         return random;
     }
@@ -197,6 +193,7 @@ public class Game {
                 if (timeLeft > 0) {
                     startTimer();
                 } else {
+                    background.stop();
                     bindTo.finish();
                 }
             }

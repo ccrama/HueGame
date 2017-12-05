@@ -2,6 +2,7 @@ package me.ccrama.huegame;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.view.GestureDetectorCompat;
@@ -51,6 +52,58 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
         background = findViewById(R.id.background);
         game = new Game(this);
 
+        if(SettingsActivity.buttonModeEnabled){
+            findViewById(R.id.buttons).setVisibility(View.VISIBLE);
+            findViewById(R.id.left).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    xOffset -=1;
+                    if(SettingsActivity.soundsEnabled) {
+                        MediaPlayer.create(getApplicationContext(), R.raw.swipe).start();
+                    }
+
+                    game.resetTilesWithOffset();
+                    game.updateUICenter();
+                }
+            });
+            findViewById(R.id.right).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    xOffset +=1;
+                    if(SettingsActivity.soundsEnabled) {
+                        MediaPlayer.create(getApplicationContext(), R.raw.swipe).start();
+                    }
+
+                    game.resetTilesWithOffset();
+                    game.updateUICenter();
+                }
+            });
+            findViewById(R.id.up).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    yOffset -=1;
+                    if(SettingsActivity.soundsEnabled) {
+                        MediaPlayer.create(getApplicationContext(), R.raw.swipe).start();
+                    }
+
+                    game.resetTilesWithOffset();
+                    game.updateUICenter();
+                }
+            });
+            findViewById(R.id.down).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    yOffset +=1;
+                    if(SettingsActivity.soundsEnabled) {
+                        MediaPlayer.create(getApplicationContext(), R.raw.swipe).start();
+                    }
+
+                    game.resetTilesWithOffset();
+                    game.updateUICenter();
+                }
+            });
+        }
+
 
         final ViewTreeObserver vto = gridView.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -71,7 +124,7 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
                     gridView.addView(v);
                     textViews[i] = v;
                 }
-                game.setupInitialState();
+                game.setupInitialState(GameActivity.this);
                 game.setupTimer();
                 center.setText("" +game.toGet);
                 background.setBackgroundColor(getResources().getColor(game.colorToGet));
@@ -97,6 +150,9 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
         animation.setInterpolator(new AccelerateDecelerateInterpolator());
         animation.setRepeatMode(Animation.REVERSE);
         parent.startAnimation(animation);
+        if(SettingsActivity.soundsEnabled) {
+            MediaPlayer.create(getApplicationContext(), R.raw.alarm).start();
+        }
     }
 
     public static int dpToPxHorizontal(int dp) {
@@ -142,6 +198,10 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
 
                     break;
             }
+            if(SettingsActivity.soundsEnabled) {
+                MediaPlayer.create(getApplicationContext(), R.raw.swipe).start();
+            }
+
             game.resetTilesWithOffset();
             game.updateUICenter();
             return false;

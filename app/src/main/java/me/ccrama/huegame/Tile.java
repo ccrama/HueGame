@@ -21,7 +21,11 @@ public class Tile  {
     public int timeBonus;
 
     public void attachToView(TextView v, Resources resources){
-        v.setText(""  + ((powerup && !powerupUsed) ? "+" + timeBonus : text) );
-        v.setBackgroundColor(resources.getColor(color));
+        v.setText(""  + (((powerup && !powerupUsed) ? "+" + timeBonus : text)));
+        if(SettingsActivity.highContrastEnabled){
+            v.setBackgroundColor(color);
+        } else {
+            v.setBackgroundColor(resources.getColor(color));
+        }
     }
 }

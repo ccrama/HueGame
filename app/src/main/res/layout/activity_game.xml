@@ -49,6 +49,7 @@
         android:background="@color/md_blue_500"
         android:gravity="center"
         android:padding="10dp"
+        android:layout_above="@+id/buttons"
         android:text="14000"
         android:textAlignment="center"
         android:textColor="#ffffff"
@@ -89,5 +90,42 @@
             android:textSize="30sp"
             android:textStyle="bold" />
     </RelativeLayout>
+
     </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="#000000"
+        android:weightSum="4"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/buttons">
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:src="@drawable/left"
+            android:id="@+id/left"
+            android:layout_height="50dp" />
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:src="@drawable/up"
+
+            android:id="@+id/up"
+            android:layout_height="50dp" />
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/down"
+            android:src="@drawable/down"
+
+            android:layout_height="50dp" />
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:src="@drawable/right"
+            android:id="@+id/right"
+            android:layout_height="50dp" />
+    </LinearLayout>
 </LinearLayout>
