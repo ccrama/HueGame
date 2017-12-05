@@ -45,6 +45,7 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
         setContentView(R.layout.activity_game);
         gridView = findViewById(R.id.gameGrid);
         time = findViewById(R.id.time);
+        MainMenu.lastGame = 0;
         startTime = System.currentTimeMillis();
         parent = findViewById(R.id.parent);
 
@@ -174,6 +175,12 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
     public static int dpToPxVertical(int dp) {
         final DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.ydpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        backgroundM.stop();
     }
 
     @Override
