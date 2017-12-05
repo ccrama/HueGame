@@ -127,7 +127,11 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
                 game.setupInitialState(GameActivity.this);
                 game.setupTimer();
                 center.setText("" +game.toGet);
-                background.setBackgroundColor(getResources().getColor(game.colorToGet));
+                if(SettingsActivity.highContrastEnabled){
+                    background.setBackgroundColor(game.colorToGet);
+                } else {
+                    background.setBackgroundColor(getResources().getColor(game.colorToGet));
+                }
 
 
             }
