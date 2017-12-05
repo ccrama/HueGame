@@ -101,7 +101,6 @@ public class MainMenu extends AppCompatActivity {
 
 
         View newGame = findViewById(R.id.startNew);
-        View resumeGame = findViewById(R.id.resumeGame);
         View settings = findViewById(R.id.settings);
 
         newGame.setOnClickListener(new View.OnClickListener() {
