@@ -6,6 +6,7 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,9 +19,11 @@ import java.util.concurrent.TimeUnit;
 public class MainMenu extends AppCompatActivity {
 
     public static SharedPreferences scores;
+    public static long lastGame;
     public TextView highScore;
     public long score = 0;
     public String lastGameID = "";
+    public static boolean high;
 
     @Override
     protected void onResume() {
@@ -29,6 +32,14 @@ public class MainMenu extends AppCompatActivity {
         //Need to save lastGameID in the game screen because this will reload when the game is paused
         lastGameID = scores.getString("lastGame", "");
         updateUI();
+
+        if(lastGame != 0) {
+            final long minute = TimeUnit.MILLISECONDS.toMinutes(lastGame);
+            final long second = TimeUnit.MILLISECONDS.toSeconds(lastGame) - (60 * minute);
+
+            new AlertDialog.Builder(this).setTitle(high ? "New highscore!" : "Game over!").setMessage(String.format("You survived %02d:%02d", minute, second))
+                    .setPositiveButton("CLOSE", null).show();
+        }
     }
 
     public void updateUI(){

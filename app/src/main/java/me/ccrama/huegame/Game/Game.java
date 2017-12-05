@@ -30,7 +30,6 @@ public class Game {
     public OnLetterChange onLetterChange;
     public OnPlayerMove onPlayerMove;
     public boolean paused;
-    public MediaPlayer background;
     public GameActivity bindTo;
 
     public HashMap<String, Tile> tileMap;
@@ -87,11 +86,6 @@ public class Game {
 
         resetTilesWithOffset();
         updateUICenter();
-
-        background = MediaPlayer.create(c.getApplicationContext(), R.raw.background);
-        if(SettingsActivity.soundsEnabled) {
-            background.start();
-        }
 
 
 
@@ -193,7 +187,6 @@ public class Game {
                 if (timeLeft > 0) {
                     startTimer();
                 } else {
-                    background.stop();
                     bindTo.finish();
                 }
             }

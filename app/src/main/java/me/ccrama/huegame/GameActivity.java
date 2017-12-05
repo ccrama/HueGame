@@ -35,6 +35,7 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
     public View background, dot, parent;
     public TextView[] textViews = new TextView[10];
 
+    private MediaPlayer backgroundM;
     long startTime;
 
 
@@ -46,6 +47,12 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
         time = findViewById(R.id.time);
         startTime = System.currentTimeMillis();
         parent = findViewById(R.id.parent);
+
+        backgroundM = MediaPlayer.create(getApplicationContext(), R.raw.background);
+        if(SettingsActivity.soundsEnabled) {
+            backgroundM.start();
+        }
+
 
         dot = findViewById(R.id.dot);
         center = (TextView) findViewById(R.id.center);
@@ -245,9 +252,14 @@ public class GameActivity extends AppCompatActivity implements Game.OnColorChang
         super.onDestroy();
         long elapsed = System.currentTimeMillis() - startTime;
 
+        backgroundM.stop();
+        MainMenu.high = false;
         if(MainMenu.scores.getLong("highscore", 0) < elapsed) {
+            MainMenu.high = true;
             MainMenu.scores.edit().putLong("highscore", elapsed).commit();
         }
+
+        MainMenu.lastGame = elapsed;
 
     }
 
